@@ -21,5 +21,36 @@ groovy ZanataSync zanata-to-git --config config.json
 To synchronize source files in a Git code repository with Zanata.
 
 `sh
-grrovy ZanataSync git-to-zanata --config config.json
+groovy ZanataSync git-to-zanata --config config.json
 `
+
+Configuration File
+------------------
+
+The configuration file (specified via the `--config` command line argument), is a json file with the following structure:
+
+```json
+{
+    "zanata": {
+        "username": "zanatauser",
+        "key": "abcdef12345",
+        "options": "--src-dir . --trans-dir .",
+        "options_push": "--includes **//*messages.properties",
+        "options_pull": ""
+    },
+    "vc": {
+        "type": "git",
+        "origin": {
+            "repo": "git://mygitserver.com/mygit.git",
+            "branch": "master"
+        },
+        "target": {
+            "repo": "git+ssh://mygitserver.com/mygit.git",
+            "branch": "target_branch",
+            "force_push": true
+        }
+    }
+}
+```
+
+If no configuration file is provided, the script will look for a file called `zanata-sync.json` in its own directory.
