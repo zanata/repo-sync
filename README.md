@@ -14,15 +14,15 @@ Usage
 
 To synchronize Zanata translations into your git code repository.
 
-`sh
+```sh
 groovy ZanataSync zanata-to-git --config config.json
-`
+```
 
 To synchronize source files in a Git code repository with Zanata.
 
-`sh
+```sh
 groovy ZanataSync git-to-zanata --config config.json
-`
+```
 
 Configuration File
 ------------------
@@ -53,4 +53,4 @@ The configuration file (specified via the `--config` command line argument), is 
 }
 ```
 
-If no configuration file is provided, the script will look for a file called `zanata-sync.json` in its own directory.
+If no configuration file is specified, the script will look for a file called `zanata-sync.json` in its own directory.
