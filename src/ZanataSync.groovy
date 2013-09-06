@@ -18,7 +18,7 @@ import org.zanata.client.ZanataClient
  */
 def scriptCmd = new ScriptCmd()
 new CmdLineParser(scriptCmd).parseArgument(args)
-scriptCmd.command.run()
+scriptCmd.command.run( scriptCmd.command.getConfig() )
 
 // Script's auxiliary classes ==========================================================================================
 
@@ -56,24 +56,22 @@ abstract class Command {
         }
     }
 
-    abstract void run();
+    abstract void run(def config);
 }
 
 class GitToZanataCmd extends Command {
     @Override
-    void run() {
+    void run(def config) {
         // Pull the latest from Git
-        new GitPullCmd().run()
+        new GitPullCmd().run(config)
         // Push to Zanata
-        new ZanataPushCmd().run()
+        new ZanataPushCmd().run(config)
     }
 }
 
 class ZanataPushCmd extends Command {
     @Override
-    void run() {
-        def config = getConfig()
-
+    void run(def config) {
         // Configured Parameters
         String userName = config.zanata.username
         String apiKey = config.zanata.key
@@ -95,9 +93,7 @@ class ZanataPushCmd extends Command {
 
 class ZanataPullCmd extends Command {
     @Override
-    void run() {
-        def config = getConfig()
-
+    void run(def config) {
         // Configured Parameters
         String userName = config.zanata.username
         String apiKey = config.zanata.key
@@ -118,9 +114,7 @@ class ZanataPullCmd extends Command {
 
 class ZanataToGitCmd extends Command {
     @Override
-    void run() {
-        def config = getConfig()
-
+    void run(def config) {
         String gitRepoLoc = config.vc.target == "origin" ? config.vc.origin.repo : config.vc.target.repo
         String originBranch = config.vc.origin.branch
         String targetBranch = config.vc.target.branch
@@ -128,10 +122,10 @@ class ZanataToGitCmd extends Command {
         final String commitComment = "Zanata Sync update from Zanata."
 
         // Pull the latest from Git
-        new GitPullCmd().run()
+        new GitPullCmd().run(config)
 
         // Push sources to Zanata
-        new ZanataPushCmd().run()
+        new ZanataPushCmd().run(config)
 
         // Commit and push to Git
         new File(workingDir).mkdirs()
@@ -142,7 +136,7 @@ class ZanataToGitCmd extends Command {
 
         // Pull translations from Zanata
         ZanataPullCmd zanataPull = new ZanataPullCmd()
-        zanataPull.run()
+        zanataPull.run(config)
 
         // Create the new branch and check it out
         runCommand "git branch -f ${targetBranch}", workingDir
@@ -160,8 +154,7 @@ class ZanataToGitCmd extends Command {
 
 class GitPullCmd extends Command {
     @Override
-    void run() {
-        def config = getConfig()
+    void run(def config) {
         String gitRepoLoc = config.vc.origin.repo
         String originBranch = config.vc.origin.branch
 
