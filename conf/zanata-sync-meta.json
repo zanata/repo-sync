@@ -1,0 +1,30 @@
+{
+    "zanata" : {
+        //"url":"http://localhost:8080/zanata/",
+        //"project":"zanata",
+        //"version":"3.0",
+        //"configxml": "", // relative to git workspace
+        "username":"admin",
+        "key":"b1f997395af864968fce5b62abdc340f",
+
+        //"srcdir":"",
+        //"transdir":"",
+        //"srclang":"",
+        // includes, excludes, exclude-locale-filenames should be in zanata.xml
+
+        "options":"--src-dir . --trans-dir .",
+        "options_push":"--includes **//*messages.properties",
+        "options_pull":""
+    },
+    "git" : {
+        "origin": {
+            "repo":"git://git.engineering.redhat.com/users/camunoz/zanata-sync-test.git", // if pushing to this, only allow fast forwards
+            "branch":"master"
+        },
+        "target" : {
+            "repo":"git+ssh://git.engineering.redhat.com/srv/git/users/camunoz/zanata-sync-test.git",
+            "branch":"", // will force push to this branch (branched from origin->branch)
+            "force_push":true
+        } //OR "origin"
+    }
+}

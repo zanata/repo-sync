@@ -1,0 +1,21 @@
+{
+    "zanata": {
+        "username": "admin",
+        "key": "b1f997395af864968fce5b62abdc340f",
+        "options": "--src-dir . --trans-dir .",
+        "options_push": "--includes **//*messages.properties",
+        "options_pull": ""
+    },
+    "vc": {
+        "type": "git",
+        "origin": {
+            "repo": "git://git.engineering.redhat.com/users/camunoz/zanata-sync-test.git",
+            "branch": "master"
+        },
+        "target": {
+            "repo": "git+ssh://git.engineering.redhat.com/srv/git/users/camunoz/zanata-sync-test.git",
+            "branch": "zanata-sync",
+            "force_push": true
+        }
+    }
+}
