@@ -1,5 +1,6 @@
 import groovy.grape.Grape
 import groovy.json.JsonSlurper
+import org.apache.tools.ant.BuildException
 import org.codehaus.groovy.tools.RootLoader
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.CmdLineParser
@@ -16,19 +17,23 @@ import org.zanata.client.ZanataClient
  *
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-def scriptCmd = new ScriptCmd()
-new CmdLineParser(scriptCmd).parseArgument(args)
-scriptCmd.command.run( scriptCmd.command.getConfig() )
+def scriptCtx = new ScriptContext()
+new CmdLineParser(scriptCtx).parseArgument(args)
+scriptCtx.execute()
 
 // Script's auxiliary classes ==========================================================================================
 
-class ScriptCmd {
+class ScriptContext {
     @Argument(handler = SubCommandHandler.class)
     @SubCommands([
     @SubCommand(name = "git-to-zanata", impl = GitToZanataCmd.class),
     @SubCommand(name = "zanata-to-git", impl = ZanataToGitCmd.class)
     ])
     Command command
+
+    def execute() {
+        command.run( command.getConfig() )
+    }
 }
 
 abstract class Command {
@@ -83,7 +88,7 @@ class ZanataPushCmd extends Command {
 
         def ant = new AntBuilder()
         def cmd = ["-B", "push", "--username", userName, "--key", apiKey]
-        ant.java(fork: true, classname: ZanataClient.class.name, classpath: cp, dir: workingDir) {
+        ant.java(fork: true, classname: ZanataClient.class.name, classpath: cp, dir: workingDir, failonerror: true) {
             cmd.addAll(extraOpts.split(" "))
             cmd.each { arg(value: it) }
         }
@@ -105,7 +110,7 @@ class ZanataPullCmd extends Command {
 
         def ant = new AntBuilder()
         def cmd = ["-B", "pull", "--username", userName, "--key", apiKey]
-        ant.java(fork: true, classname: ZanataClient.class.name, classpath: cp, dir: workingDir) {
+        ant.java(fork: true, classname: ZanataClient.class.name, classpath: cp, dir: workingDir, failonerror: true) {
             cmd.addAll(extraOpts.split(" "))
             cmd.each { arg(value: it) }
         }
