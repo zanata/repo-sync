@@ -53,4 +53,4 @@ The configuration file (specified via the `--config` command line argument), is 
 }
 ```
 
-If no configuration file is specified, the script will look for a file called `zanata-sync.json` in its own directory.
+If no configuration file is specified, the script will look for a file called `zanata-sync.json` in the current directory.
