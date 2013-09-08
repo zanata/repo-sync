@@ -32,6 +32,38 @@ The configuration file (specified via the `--config` command line argument), is 
 ```json
 {
     "zanata": {
+        "username": "Zanata instance's user name",
+        "key": "Zanata instance's api key",
+        "options": "General options that will apply whenever invoking the zanata client (any command)",
+        "options_push": "Options that will be applied when the zanata client's push command is invoked",
+        "options_pull": "Options that will be applied when the zanata client's pull command is invoked"
+    },
+    "vc": {
+        "type": "git (Currently only git is supported, more may come in the future)",
+        "origin": {
+            "repo": "Git repo url where source files will be pulled from",
+            "branch": "Git branch where source files will be pulled from"
+        },
+        "target": {
+            "repo": "Git repo url where translated files will be pushed",
+            "branch": "Git branch where translated files will be pushed",
+            "force_push": "(true | false) Whether to force push. Useful when you always want the latest translations pushed."
+        }
+    }
+}
+```
+
+If the "origin" and "target" repositories and branches are the same, then the target configuration may be specified like this:
+
+```json
+        "target": "origin"
+```
+
+The following is a sample configuration file:
+
+```json
+{
+    "zanata": {
         "username": "zanatauser",
         "key": "abcdef12345",
         "options": "--src-dir . --trans-dir .",
@@ -53,4 +85,5 @@ The configuration file (specified via the `--config` command line argument), is 
 }
 ```
 
+   
 If no configuration file is specified, the script will look for a file called `zanata-sync.json` in the current directory.
