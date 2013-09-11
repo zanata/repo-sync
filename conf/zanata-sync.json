@@ -17,5 +17,11 @@
             "branch": "zanata-sync",
             "force_push": true
         }
+    },
+    "email": {
+        "from":"no-reply@zanata.org",
+        "tolist":"camunoz@redhat.com",
+        "host":"localhost",
+        "port":"25"
     }
 }

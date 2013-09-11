@@ -26,5 +26,14 @@
             "branch":"", // will force push to this branch (branched from origin->branch)
             "force_push":true
         } //OR "origin"
+    },
+    "email": {
+        "from":"no-reply@zanata.org",
+        "tolist":"camunoz@redhat.com",
+        "host":"localhost",
+        "port":"25",
+        "user":"",
+        "password":"",
+        "ssl":""
     }
 }

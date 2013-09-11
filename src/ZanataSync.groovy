@@ -10,13 +10,20 @@ import org.kohsuke.args4j.spi.SubCommandHandler
 import org.kohsuke.args4j.spi.SubCommands
 import org.zanata.client.ZanataClient
 
-@Grab(group = "org.zanata", module = "zanata-cli", version = "3.1.0")
+@GrabConfig(systemClassLoader=true)
+@Grapes([
+    @Grab(group = "org.zanata", module = "zanata-cli", version = "3.1.0"),
+    @Grab(group='ant', module='ant-javamail', version='1.6.5')
+])
 
 /**
  * Performs synchronization activities between a Zanata server and its code repository.
  *
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
+
+// Script code =========================================================================================================
+
 def scriptCtx = new ScriptContext()
 new CmdLineParser(scriptCtx).parseArgument(args)
 scriptCtx.execute()
@@ -58,6 +65,30 @@ abstract class Command {
 
         if (failIfUnsuccessful && exitValue != 0) {
             throw new RuntimeException("Failed to run command")
+        }
+    }
+
+    def sendEmail = { String subject, String content, def config ->
+        def ant = new AntBuilder()
+        def mailargs = [from:config.email.from, tolist:config.email.tolist, mailhost:config.email.host, subject: subject]
+        if( config.email.port ) {
+            mailargs.mailport = config.email.port
+        }
+        if( config.email.user ) {
+            mailargs.user = config.email.user
+        }
+        if( config.email.password ) {
+            mailargs.password = config.email.password
+        }
+        if( config.email.ssl ) {
+            mailargs.ssl = config.email.ssl
+        }
+        if( config.email.enableStartTLS ) {
+            mailargs.enableStartTLS = config.email.enableStartTLS
+        }
+
+        ant.mail(mailargs) {
+            message(content)
         }
     }
 
@@ -139,21 +170,51 @@ class ZanataToGitCmd extends Command {
         runCommand "git fetch", workingDir
         runCommand "git checkout origin/${originBranch}", workingDir, true
 
-        // Pull translations from Zanata
-        ZanataPullCmd zanataPull = new ZanataPullCmd()
-        zanataPull.run(config)
-
         // Create the new branch and check it out
         runCommand "git branch -f ${targetBranch}", workingDir
         runCommand "git checkout ${targetBranch}", workingDir
 
-        // Git create a commit (Adds everything that has changed)
+        // Pull translations from Zanata
+        ZanataPullCmd zanataPull = new ZanataPullCmd()
+        zanataPull.run(config)
+
+        // Git add everything that has changed
         runCommand "git add .", workingDir
         runCommand "git rm -f -r --ignore-unmatch .zanata-cache", workingDir
-        runCommand(["git", "commit", "-m", commitComment], workingDir, true)
 
-        // Git push
-        runCommand "git push ${forcePush ? "-f" : ""} ${gitRepoLoc} ${targetBranch}", workingDir, true
+        // Check if anything was added
+        // NB: Not using runCommand to be able to use the processes' output
+        def status = "git status --porcelain"
+        def proc = status.execute([], new File(workingDir))
+        def procOutput = new StringBuffer()
+        proc.consumeProcessOutputStream( procOutput )
+        proc.waitFor()
+
+        // If anything was added, push and inform
+        if( procOutput.length() > 0 ) {
+            // Commit the changes
+            runCommand(["git", "commit", "-m", commitComment], workingDir, true)
+
+            def changes = "git diff-tree --no-commit-id --name-only -r HEAD"
+            proc = changes.execute([], new File(workingDir))
+            procOutput = new StringBuffer()
+            proc.consumeProcessOutputStream( procOutput )
+            proc.waitFor()
+
+            // Git push
+            runCommand "git push ${forcePush ? "-f" : ""} ${gitRepoLoc} ${targetBranch}", workingDir, true
+
+            // Send email with results
+            sendEmail("Zanata translations updated in Git",
+                """Zanata RepoSync successfully updated translations. The following files were pushed to the '$targetBranch' branch:
+
+                   $procOutput
+                """,
+                config)
+        }
+        else {
+            println "Aborting Git push: nothing to commit"
+        }
     }
 }
 
