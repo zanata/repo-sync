@@ -49,6 +49,16 @@ The configuration file (specified via the `--config` command line argument), is 
             "branch": "Git branch where translated files will be pushed",
             "force_push": "(true | false) Whether to force push. Useful when you always want the latest translations pushed."
         }
+    },
+    "email": {
+        "from":"From address to use.",
+        "tolist":"Comma-separated recipients list for notification emails sent from the script",
+        "host":"Email Server host",
+        "port":"Email Server port (Defaults to 25 if not provided)",
+        "user":"Email server username (If the server is not authenticated, remove this line)",
+        "password":"Email server password (If the server is not authenticated, remove this line)",
+        "ssl":"(true | false) Whether the server uses ssl",
+        "enableStartTLS":"(true | false) Whether to use the start TLS command."
     }
 }
 ```
