@@ -24,6 +24,11 @@ To synchronize source files in a Git code repository with Zanata.
 groovy ZanataSync git-to-zanata --config config.json
 ```
 
+The script will create a workspace directory where the repository's content will be contained. All commands will be executed from
+this directory (git, zanata client, etc.). The `--config` option is relative to this workspace directory. Basically, it's relative
+to your source repository's location. This also means that if the `zanata.xml` is kept on your source repository, then it may be
+used directly by the sync script when connecting to Zanata.
+
 Configuration File
 ------------------
 
@@ -36,7 +41,8 @@ The configuration file (specified via the `--config` command line argument), is 
         "key": "Zanata instance's api key",
         "options": "General options that will apply whenever invoking the zanata client (any command)",
         "options_push": "Options that will be applied when the zanata client's push command is invoked",
-        "options_pull": "Options that will be applied when the zanata client's pull command is invoked"
+        "options_pull": "Options that will be applied when the zanata client's pull command is invoked",
+        "pre_push": "(Optional) Command to run before pushing to Zanata. (i.e. to generate sources for instance.)"
     },
     "vc": {
         "type": "git (Currently only git is supported, more may come in the future)",
