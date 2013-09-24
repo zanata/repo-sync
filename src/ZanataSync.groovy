@@ -98,8 +98,16 @@ abstract class Command {
 class GitToZanataCmd extends Command {
     @Override
     void run(def config) {
+        String prePushCmd = config.zanata?.pre_push
+
         // Pull the latest from Git
         new GitPullCmd().run(config)
+
+        // Generate the sources if necessary
+        if( prePushCmd ) {
+            runCommand prePushCmd, workingDir, true
+        }
+
         // Push to Zanata
         new ZanataPushCmd().run(config)
     }
@@ -155,10 +163,16 @@ class ZanataToGitCmd extends Command {
         String originBranch = config.vc.origin.branch
         String targetBranch = config.vc.target.branch
         boolean forcePush = config.vc.target.force_push ?: false
+        String prePushCmd = config.zanata?.pre_push
         final String commitComment = "Zanata Sync update from Zanata."
 
         // Pull the latest from Git
         new GitPullCmd().run(config)
+
+        // Generate the sources if necessary
+        if( prePushCmd ) {
+            runCommand prePushCmd, workingDir, true
+        }
 
         // Push sources to Zanata
         new ZanataPushCmd().run(config)
