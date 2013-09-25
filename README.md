@@ -3,6 +3,10 @@ zanata-sync-script
 
 Configurable script to do simple synchronization between a Zanata instance and a code repository.
 
+NOTE: This script is NOT currently suitable for doing an initial Git push from Zanata. This means that there should
+already be an existing Git repository with translatable files set up. Doing a first push from Git to Zanata is 
+currently supported however.
+
 Pre-requisites
 --------------
 
@@ -57,7 +61,7 @@ The configuration file (specified via the `--config` command line argument), is 
         }
     },
     "email": {
-        "from":"From address to use.",
+        "from":"From email address to use.",
         "tolist":"Comma-separated recipients list for notification emails sent from the script",
         "host":"Email Server host",
         "port":"Email Server port (Defaults to 25 if not provided)",
@@ -74,6 +78,8 @@ If the "origin" and "target" repositories and branches are the same, then the ta
 ```json
         "target": "origin"
 ```
+
+If the "email" section is not provided, the script will not send emails.
 
 The following is a sample configuration file:
 
