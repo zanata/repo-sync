@@ -69,26 +69,32 @@ abstract class Command {
     }
 
     def sendEmail = { String subject, String content, def config ->
-        def ant = new AntBuilder()
-        def mailargs = [from:config.email.from, tolist:config.email.tolist, mailhost:config.email.host, subject: subject]
-        if( config.email.port ) {
-            mailargs.mailport = config.email.port
-        }
-        if( config.email.user ) {
-            mailargs.user = config.email.user
-        }
-        if( config.email.password ) {
-            mailargs.password = config.email.password
-        }
-        if( config.email.ssl ) {
-            mailargs.ssl = config.email.ssl
-        }
-        if( config.email.enableStartTLS ) {
-            mailargs.enableStartTLS = config.email.enableStartTLS
-        }
+        if( config.email ) {
+            def ant = new AntBuilder()
+            def mailargs = [from:config.email.from, tolist:config.email.tolist, mailhost:config.email.host, subject: subject]
+            if( config.email.port ) {
+                mailargs.mailport = config.email.port
+            }
+            if( config.email.user ) {
+                mailargs.user = config.email.user
+            }
+            if( config.email.password ) {
+                mailargs.password = config.email.password
+            }
+            if( config.email.ssl ) {
+                mailargs.ssl = config.email.ssl
+            }
+            if( config.email.enableStartTLS ) {
+                mailargs.enableStartTLS = config.email.enableStartTLS
+            }
 
-        ant.mail(mailargs) {
-            message(content)
+            ant.mail(mailargs) {
+                message(content)
+            }
+        }
+        else {
+            println "Email settings not configured."
+            println content
         }
     }
 
