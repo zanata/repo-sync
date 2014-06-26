@@ -12,7 +12,7 @@ import org.zanata.client.ZanataClient
 
 @GrabConfig(systemClassLoader=true)
 @Grapes([
-    @Grab(group = "org.zanata", module = "zanata-cli", version = "3.1.0"),
+    @Grab(group = "org.zanata", module = "zanata-cli", version = "3.3.2"),
     @Grab(group='ant', module='ant-javamail', version='1.6.5')
 ])
 
